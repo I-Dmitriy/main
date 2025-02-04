@@ -43,14 +43,14 @@ def start_screen():
                 terminate()
             elif event.type == pygame.KEYDOWN or \
                     event.type == pygame.MOUSEBUTTONDOWN:
-                return  # начинаем игру
+                return
         pygame.display.flip()
         clock.tick(FPS)
 
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
-    # если файл не существует, то выходим
+
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
@@ -68,14 +68,11 @@ def load_image(name, colorkey=None):
 
 def load_level(filename):
     filename = "data/" + filename
-    # читаем уровень, убирая символы перевода строки
     with open(filename, 'r') as mapFile:
         level_map = [line.strip() for line in mapFile]
 
-    # и подсчитываемl максимальную длину
     max_width = max(map(len, level_map))
 
-    # дополняем каждую строку пустыми клетками ('.')
     return list(map(lambda x: x.ljust(max_width, '.'), level_map))
 
 
@@ -105,8 +102,8 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(
             tile_width * pos_x + 15, tile_height * pos_y + 5)
 
-    def mover(self, t):
-        self.rect = self.rect.move(t, 0)
+    def mover(self, tx):
+        self.rect = self.rect.move(tx, 0)
 
     def update(self, *args):
         if args:
@@ -122,12 +119,11 @@ class Player(pygame.sprite.Sprite):
 
 
 class Camera:
-    # зададим начальный сдвиг камеры
+
     def __init__(self):
         self.dx = 0
         self.dy = 0
 
-    # сдвинуть объект obj на смещение камеры
     def apply(self, obj):
         obj.rect.x += self.dx
         if obj.rect.x > width:
@@ -136,7 +132,6 @@ class Camera:
             obj.rect.x += width
         obj.rect.y += self.dy
 
-    # позиционировать камеру на объекте target
     def update(self, target):
         self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
         self.dy = -(target.rect.y + target.rect.h // 2 - height // 2)
@@ -154,15 +149,15 @@ def generate_level(level):
                 Tile('empty', x, y)
 
                 new_player = Player(x, y)
-    # вернем игрока, а также размер поля в клетках
+
     return new_player, x, y
 
 
 if __name__ == '__main__':
     start_screen()
     player, level_x, level_y = generate_level(load_level('level_0.txt'))
-    tx = 15
-    v = 100
+    tx = 5
+    v = 10
 
     clock = pygame.time.Clock()
     camera = Camera()
@@ -172,14 +167,15 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                v += 10
+                tx += 10
                 player_group.update(event)
         screen.fill('green')
-        # изменяем ракурс камеры
+
         camera.update(player)
-        # обновляем положение всех спрайтов
+
         for sprite in all_sprites:
             camera.apply(sprite)
+        player.mover(tx)
         all_sprites.draw(screen)
         player_group.draw(screen)
         pygame.display.flip()
