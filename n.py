@@ -22,11 +22,11 @@ def terminate():
 
 
 def start_screen():
-    intro_text = ["Вниз или вверх чтобы управлять"]
+    intro_text = ["Вниз или вверх чтобы управлять", "Нажмите чтобы начать"]
     clock = pygame.time.Clock()
     fon = pygame.transform.scale(load_image('fon.jpg'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 30)
+    font = pygame.font.Font(None, 60)
     text_coord = 50
     for line in intro_text:
         string_rendered = font.render(line, 1, pygame.Color('black'))
@@ -88,8 +88,10 @@ tile_width = tile_height = 50
 class Tile(pygame.sprite.Sprite):
     def __init__(self, tile_type, pos_x, pos_y):
         super().__init__(tiles_group, all_sprites)
+        self.image = tile_images[tile_type]
         if tile_type == 'wall':
             self.add(wall_group)
+
         self.image = tile_images[tile_type]
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y)
@@ -103,7 +105,13 @@ class Player(pygame.sprite.Sprite):
             tile_width * pos_x + 15, tile_height * pos_y + 5)
 
     def mover(self, tx):
+        rect = self.rect
         self.rect = self.rect.move(tx, 0)
+
+        if pygame.sprite.spritecollideany(self, wall_group):
+            self.rect = rect
+            return False
+        return True
 
     def update(self, *args):
         if args:
@@ -113,7 +121,6 @@ class Player(pygame.sprite.Sprite):
                 self.rect = self.rect.move(0, -tile_height)
             elif key == pygame.K_DOWN:
                 self.rect = self.rect.move(0, tile_height)
-
             if pygame.sprite.spritecollideany(self, wall_group):
                 self.rect = rect
 
@@ -153,6 +160,33 @@ def generate_level(level):
     return new_player, x, y
 
 
+def end_screen():
+    intro_text = ["Конец игры"]
+    clock = pygame.time.Clock()
+    fon = pygame.transform.scale(load_image('fon.jpg'), (WIDTH, HEIGHT))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 60)
+    text_coord = 50
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pygame.Color('black'))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 10
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN or \
+                    event.type == pygame.MOUSEBUTTONDOWN:
+                return True
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
 if __name__ == '__main__':
     start_screen()
     player, level_x, level_y = generate_level(load_level('level_0.txt'))
@@ -167,7 +201,7 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                tx += 10
+                tx += 0.01
                 player_group.update(event)
         screen.fill('green')
 
@@ -175,7 +209,12 @@ if __name__ == '__main__':
 
         for sprite in all_sprites:
             camera.apply(sprite)
-        player.mover(tx)
+        if not player.mover(tx):
+            running = False
+            if end_screen():
+                running = True
+                all_sprites.draw(screen)
+
         all_sprites.draw(screen)
         player_group.draw(screen)
         pygame.display.flip()
