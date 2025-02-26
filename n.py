@@ -108,7 +108,7 @@ class Player(pygame.sprite.Sprite):
     def mover(self, tx):
 
         rect = self.rect
-        self.rect = self.rect.move(tx, 0)
+        self.rect = self.rect.move(0, tx)
 
         if pygame.sprite.spritecollideany(self, wall_group):
             self.rect = rect
@@ -119,10 +119,10 @@ class Player(pygame.sprite.Sprite):
         if args:
             key = args[0].key
             rect = self.rect
-            if key == pygame.K_UP:
-                self.rect = self.rect.move(0, -tile_height)
-            elif key == pygame.K_DOWN:
-                self.rect = self.rect.move(0, tile_height)
+            if key == pygame.K_RIGHT:
+                self.rect = self.rect.move(tile_width, 0)
+            elif key == pygame.K_LEFT:
+                self.rect = self.rect.move(-tile_width, 0)
             if pygame.sprite.spritecollideany(self, wall_group):
                 self.rect = rect
 
@@ -135,10 +135,10 @@ class Camera:
 
     def apply(self, obj):
         obj.rect.x += self.dx
-        if obj.rect.x > width:
-            obj.rect.x -= width
-        elif obj.rect.x < 0:
-            obj.rect.x += width
+        if obj.rect.y > height:
+            obj.rect.y -= height
+        elif obj.rect.y < 0:
+            obj.rect.y += height
         obj.rect.y += self.dy
 
     def update(self, target):
@@ -163,7 +163,7 @@ def generate_level(level):
 
 
 def end_screen(score):
-    intro_text = ["Конец игры", f"Ваш счёт: {score}"]
+    intro_text = ["Конец игры", f"Ваш счёт: {score}","Нажмите чтобы начать заново"]
     clock = pygame.time.Clock()
     fon = pygame.transform.scale(load_image('fon.jpg'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
@@ -192,7 +192,7 @@ def end_screen(score):
 
 if __name__ == '__main__':
     start_screen()
-    player, level_x, level_y = generate_level(load_level('level_0.txt'))
+    player, level_x, level_y = generate_level(load_level('level_1.txt'))
     tx = 5
     v = 10
     score = 0
