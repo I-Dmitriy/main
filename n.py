@@ -103,8 +103,10 @@ class Player(pygame.sprite.Sprite):
         self.image = player_image
         self.rect = self.image.get_rect().move(
             tile_width * pos_x + 15, tile_height * pos_y + 5)
+        self.start_coords = [tile_width * pos_x + 15, tile_height * pos_y + 5]
 
     def mover(self, tx):
+
         rect = self.rect
         self.rect = self.rect.move(tx, 0)
 
@@ -160,8 +162,8 @@ def generate_level(level):
     return new_player, x, y
 
 
-def end_screen():
-    intro_text = ["Конец игры"]
+def end_screen(score):
+    intro_text = ["Конец игры", f"Ваш счёт: {score}"]
     clock = pygame.time.Clock()
     fon = pygame.transform.scale(load_image('fon.jpg'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
@@ -182,6 +184,7 @@ def end_screen():
                 terminate()
             elif event.type == pygame.KEYDOWN or \
                     event.type == pygame.MOUSEBUTTONDOWN:
+
                 return True
         pygame.display.flip()
         clock.tick(FPS)
@@ -192,18 +195,21 @@ if __name__ == '__main__':
     player, level_x, level_y = generate_level(load_level('level_0.txt'))
     tx = 5
     v = 10
-
+    score = 0
     clock = pygame.time.Clock()
     camera = Camera()
     running = True
     while running:
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
                 tx += 0.01
                 player_group.update(event)
+
         screen.fill('green')
+        score += 1
 
         camera.update(player)
 
@@ -211,9 +217,7 @@ if __name__ == '__main__':
             camera.apply(sprite)
         if not player.mover(tx):
             running = False
-            if end_screen():
-                running = True
-                all_sprites.draw(screen)
+            end_screen(score)
 
         all_sprites.draw(screen)
         player_group.draw(screen)
