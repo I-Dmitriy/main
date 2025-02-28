@@ -5,15 +5,16 @@ import os
 
 FPS = 50
 pygame.init()
-pygame.display.set_caption('MARIO')
+pygame.display.set_caption('Игра "Яндекс доставка"')
 pygame.key.set_repeat(200, 70)
-size = width, height = WIDTH, HEIGHT = 1000, 400
+size = width, height = WIDTH, HEIGHT = 500, 1000
 screen = pygame.display.set_mode(size)
 
 all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 wall_group = pygame.sprite.Group()
+left_right = 1
 
 
 def terminate():
@@ -22,9 +23,11 @@ def terminate():
 
 
 def start_screen():
-    intro_text = ["Вниз или вверх чтобы управлять", "Нажмите чтобы начать"]
+    size = width, height = WIDTH, HEIGHT = 1000, 1000
+    screen = pygame.display.set_mode(size)
+    intro_text = ["Вправо или влево чтобы управлять", "Нажмите чтобы начать"]
     clock = pygame.time.Clock()
-    fon = pygame.transform.scale(load_image('fon.jpg'), (WIDTH, HEIGHT))
+    fon = pygame.transform.scale(load_image('Fon.png'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 60)
     text_coord = 50
@@ -77,16 +80,18 @@ def load_level(filename):
 
 
 tile_images = {
-    'wall': load_image('box.png'),
+    'wall': load_image('barrier.png'),
     'empty': load_image('grass.png')
 }
-player_image = load_image('mario.png')
+player_image = load_image('player.png')
 
 tile_width = tile_height = 50
 
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, tile_type, pos_x, pos_y):
+        self.pos_x = pos_x
+        self.pos_y = pos_y
         super().__init__(tiles_group, all_sprites)
         self.image = tile_images[tile_type]
         if tile_type == 'wall':
@@ -102,8 +107,8 @@ class Player(pygame.sprite.Sprite):
         super().__init__(player_group, all_sprites)
         self.image = player_image
         self.rect = self.image.get_rect().move(
-            tile_width * pos_x + 15, tile_height * pos_y + 5)
-        self.start_coords = [tile_width * pos_x + 15, tile_height * pos_y + 5]
+            tile_width * pos_x, tile_height * pos_y + 5)
+        self.start_coords = [tile_width * pos_x, tile_height * pos_y + 5]
 
     def mover(self, tx):
 
@@ -116,13 +121,29 @@ class Player(pygame.sprite.Sprite):
         return True
 
     def update(self, *args):
+        global left_right
         if args:
             key = args[0].key
             rect = self.rect
-            if key == pygame.K_RIGHT:
+            if key == pygame.K_RIGHT or key == pygame.K_d:
                 self.rect = self.rect.move(tile_width, 0)
-            elif key == pygame.K_LEFT:
+                if left_right == 1:
+                    pass
+                else:
+                    self.image = pygame.transform.flip(self.image, True, False)
+                    screen.blit(self.image, ((500 - 50) // 2, (1000 - 50) // 2))
+                    pygame.display.flip()
+                    left_right = 1
+            elif key == pygame.K_LEFT or key == pygame.K_a:
                 self.rect = self.rect.move(-tile_width, 0)
+                if left_right == 0:
+                    pass
+                else:
+                    self.image = pygame.transform.flip(self.image, True, False)
+                    screen.blit(self.image, ((500 - 50) // 2, (1000 - 50) // 2))
+                    pygame.display.flip()
+                    left_right = 0
+
             if pygame.sprite.spritecollideany(self, wall_group):
                 self.rect = rect
 
@@ -163,18 +184,28 @@ def generate_level(level):
 
 
 def end_screen(score):
-    intro_text = ["Конец игры", f"Ваш счёт: {score}","Нажмите чтобы начать заново"]
+    size = width, height = WIDTH, HEIGHT = 1000, 1000
+    screen = pygame.display.set_mode(size)
+    with open("score.txt", "r") as f:
+        best_score = int(f.read())
+        if score > best_score:
+            best_score = score
+            with open("score.txt", 'w') as file:
+                pass
+                file.write(str(best_score))
+
+    intro_text = ["Конец игры", f"Ваш счёт: {score}", f"Рекорд {best_score}"]
     clock = pygame.time.Clock()
-    fon = pygame.transform.scale(load_image('fon.jpg'), (WIDTH, HEIGHT))
+    fon = pygame.transform.scale(load_image('Fon.png'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 60)
-    text_coord = 50
+    font = pygame.font.Font(None, 65)
+    text_coord = 20
     for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('black'))
+        string_rendered = font.render(line, 1, pygame.Color('red'))
         intro_rect = string_rendered.get_rect()
-        text_coord += 10
+
         intro_rect.top = text_coord
-        intro_rect.x = 10
+        intro_rect.x += 10
         text_coord += intro_rect.height
         screen.blit(string_rendered, intro_rect)
 
@@ -192,7 +223,12 @@ def end_screen(score):
 
 if __name__ == '__main__':
     start_screen()
+    pygame.key.set_repeat(200, 70)
+    size = width, height = WIDTH, HEIGHT = 500, 1000
+    screen = pygame.display.set_mode(size)
     player, level_x, level_y = generate_level(load_level('level_1.txt'))
+    pygame.mixer.music.load("data/backtrack.mp3")
+    pygame.mixer.music.play(-1)
     tx = 5
     v = 10
     score = 0
@@ -208,7 +244,7 @@ if __name__ == '__main__':
                 tx += 0.01
                 player_group.update(event)
 
-        screen.fill('green')
+        screen.fill('black')
         score += 1
 
         camera.update(player)
@@ -217,6 +253,7 @@ if __name__ == '__main__':
             camera.apply(sprite)
         if not player.mover(tx):
             running = False
+            pygame.mixer.music.stop()
             end_screen(score)
 
         all_sprites.draw(screen)
