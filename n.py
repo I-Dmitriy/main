@@ -70,7 +70,6 @@ def load_image(name, colorkey=None):
 
 
 def load_level(filename):
-    filename = "data/" + filename
     with open(filename, 'r') as mapFile:
         level_map = [line.strip() for line in mapFile]
 
@@ -227,7 +226,7 @@ if __name__ == '__main__':
     size = width, height = WIDTH, HEIGHT = 500, 1000
     screen = pygame.display.set_mode(size)
     player, level_x, level_y = generate_level(load_level('level_1.txt'))
-    pygame.mixer.music.load("data/backtrack.mp3")
+    pygame.mixer.music.load("backtrack.mp3")
     pygame.mixer.music.play(-1)
     tx = 5
     v = 10
