@@ -74,9 +74,9 @@ while retry >= 1:
                             return True
                         if button_quit.collidepoint(event.pos):
                             return False
-            if button_retry.collidepoint(pygame.mouse.get_pos()):  
+            if button_retry.collidepoint(pygame.mouse.get_pos()):  # Проверка, наведена ли мышь на кнопку
                 pygame.draw.rect(screen, 'red', button_retry)
-            elif button_quit.collidepoint(pygame.mouse.get_pos()): 
+            elif button_quit.collidepoint(pygame.mouse.get_pos()):  # Проверка, наведена ли мышь на кнопку
                 pygame.draw.rect(screen, 'red', button_quit)
             else:
                 pygame.draw.rect(screen, 'yellow', button_retry)
@@ -248,7 +248,6 @@ while retry >= 1:
             with open("score.txt", 'w') as file:
                 file.writelines(scores)
 
-
         intro_text = [f"Ваш счёт: {score}", f"Рекорд {level + 1} уровня: {best_score}"]
         clock = pygame.time.Clock()
         fon = pygame.transform.scale(load_image('Fon.png'), (WIDTH, HEIGHT))
@@ -274,9 +273,9 @@ while retry >= 1:
                             return True
                         if button_quit.collidepoint(event.pos):
                             return False
-            if button_retry.collidepoint(pygame.mouse.get_pos()):  
+            if button_retry.collidepoint(pygame.mouse.get_pos()):  # Проверка, наведена ли мышь на кнопку
                 pygame.draw.rect(screen, 'red', button_retry)
-            elif button_quit.collidepoint(pygame.mouse.get_pos()):  
+            elif button_quit.collidepoint(pygame.mouse.get_pos()):  # Проверка, наведена ли мышь на кнопку
                 pygame.draw.rect(screen, 'red', button_quit)
             else:
                 pygame.draw.rect(screen, 'yellow', button_retry)
@@ -336,6 +335,7 @@ while retry >= 1:
                 clock = pygame.time.Clock()
                 camera = Camera()
                 running = True
+                font = pygame.font.Font(None, 36)
                 while running:
                     for event in pygame.event.get():
                         if event.type == pygame.QUIT:
@@ -343,11 +343,9 @@ while retry >= 1:
                             retry = 0
                         if event.type == pygame.KEYDOWN:
                             tx += 0.1
+                            score += 1
                             player_group.update(event)
-
-                    screen.fill('black')
-                    score += 1
-
+                    
                     camera.update(player)
 
                     for sprite in all_sprites:
@@ -360,7 +358,9 @@ while retry >= 1:
                             retry += 1
                         else:
                             retry = 0
-
+                    score_text = font.render(f"{score}", True, 'yellow')
+                    screen.blit(score_text, (10, 10))
+                    screen.fill('black')
                     all_sprites.draw(screen)
                     player_group.draw(screen)
                     pygame.display.flip()
@@ -371,8 +371,6 @@ while retry >= 1:
                 retry = -1
                 pygame.quit()
         else:
-
-
 
             pygame.key.set_repeat(200, 70)
             size = width, height = WIDTH, HEIGHT = 500, 1000
@@ -394,10 +392,10 @@ while retry >= 1:
                         retry = 0
                     if event.type == pygame.KEYDOWN:
                         tx += 0.03
+                        score += 1
                         player_group.update(event)
 
                 screen.fill('black')
-                score += 1
 
                 camera.update(player)
 
