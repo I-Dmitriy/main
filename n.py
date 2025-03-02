@@ -74,9 +74,9 @@ while retry >= 1:
                             return True
                         if button_quit.collidepoint(event.pos):
                             return False
-            if button_retry.collidepoint(pygame.mouse.get_pos()):  # Проверка, наведена ли мышь на кнопку
+            if button_retry.collidepoint(pygame.mouse.get_pos()):  
                 pygame.draw.rect(screen, 'red', button_retry)
-            elif button_quit.collidepoint(pygame.mouse.get_pos()):  # Проверка, наведена ли мышь на кнопку
+            elif button_quit.collidepoint(pygame.mouse.get_pos()): 
                 pygame.draw.rect(screen, 'red', button_quit)
             else:
                 pygame.draw.rect(screen, 'yellow', button_retry)
@@ -274,9 +274,9 @@ while retry >= 1:
                             return True
                         if button_quit.collidepoint(event.pos):
                             return False
-            if button_retry.collidepoint(pygame.mouse.get_pos()):  # Проверка, наведена ли мышь на кнопку
+            if button_retry.collidepoint(pygame.mouse.get_pos()):  
                 pygame.draw.rect(screen, 'red', button_retry)
-            elif button_quit.collidepoint(pygame.mouse.get_pos()):  # Проверка, наведена ли мышь на кнопку
+            elif button_quit.collidepoint(pygame.mouse.get_pos()):  
                 pygame.draw.rect(screen, 'red', button_quit)
             else:
                 pygame.draw.rect(screen, 'yellow', button_retry)
