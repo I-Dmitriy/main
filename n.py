@@ -44,11 +44,11 @@ while retry >= 1:
             best_score10 = int(scores[9])
 
         intro_text = ["Вправо или влево чтобы управлять",
-                      f"Рекорд 1 уровня: {best_score1}, Рекорд 2 уровня: {best_score2}",
-                      f"Рекорд 3 уровня: {best_score3}, Рекорд 4 уровня: {best_score4}",
-                      f"Рекорд 5 уровня: {best_score5}, Рекорд 6 уровня: {best_score6}",
-                      f"Рекорд 7 уровня: {best_score7}, Рекорд 8 уровня: {best_score8}",
-                      f"Рекорд 9 уровня: {best_score9}, Рекорд 10 уровня: {best_score10}"
+                      f"Рекорд 1 уровня: {best_score1}  Рекорд 2 уровня: {best_score2}",
+                      f"Рекорд 3 уровня: {best_score3}  Рекорд 4 уровня: {best_score4}",
+                      f"Рекорд 5 уровня: {best_score5}  Рекорд 6 уровня: {best_score6}",
+                      f"Рекорд 7 уровня: {best_score7}  Рекорд 8 уровня: {best_score8}",
+                      f"Рекорд 9 уровня: {best_score9}  Рекорд 10 уровня: {best_score10}"
                       ]
         clock = pygame.time.Clock()
         fon = pygame.transform.scale(load_image('Fon.png'), (WIDTH, HEIGHT))
